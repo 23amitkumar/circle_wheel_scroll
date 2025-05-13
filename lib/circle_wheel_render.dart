@@ -717,8 +717,12 @@ class RenderCircleListViewport extends RenderBox
   }
 
   @override
-  RevealedOffset getOffsetToReveal(RenderObject target, double alignment,
-      {Rect? rect}) {
+  RevealedOffset getOffsetToReveal(
+      RenderObject target,
+      double alignment, {
+        Axis? axis,  // Add this required parameter
+        Rect? rect,
+      }) {
     // `target` is only fully revealed when in the selected/center position. Therefore,
     // this method always returns the offset that shows `target` in the center position,
     // which is the same offset for all `alignment` values.
@@ -727,10 +731,12 @@ class RenderCircleListViewport extends RenderBox
 
     // `child` will be the last RenderObject before the viewport when walking up from `target`.
     RenderObject child = target;
-    while (child.parent != this) child = child.parent as RenderObject;
+    while (child.parent != this) {
+      child = child.parent as RenderObject;
+    }
 
     final CircleListParentData? parentData =
-        child.parentData as CircleListParentData?;
+    child.parentData as CircleListParentData?;
     final double targetOffset = axis == Axis.horizontal
         ? parentData!.offset.dx
         : parentData!.offset.dy; // the so-called "centerPosition"
@@ -744,6 +750,35 @@ class RenderCircleListViewport extends RenderBox
 
     return RevealedOffset(offset: targetOffset, rect: targetRect);
   }
+
+  // @override
+  // RevealedOffset getOffsetToReveal(RenderObject target, double alignment,
+  //     {Rect? rect}) {
+  //   // `target` is only fully revealed when in the selected/center position. Therefore,
+  //   // this method always returns the offset that shows `target` in the center position,
+  //   // which is the same offset for all `alignment` values.
+  //
+  //   rect ??= target.paintBounds;
+  //
+  //   // `child` will be the last RenderObject before the viewport when walking up from `target`.
+  //   RenderObject child = target;
+  //   while (child.parent != this) child = child.parent as RenderObject;
+  //
+  //   final CircleListParentData? parentData =
+  //       child.parentData as CircleListParentData?;
+  //   final double targetOffset = axis == Axis.horizontal
+  //       ? parentData!.offset.dx
+  //       : parentData!.offset.dy; // the so-called "centerPosition"
+  //
+  //   final Matrix4 transform = target.getTransformTo(this);
+  //   final Rect bounds = MatrixUtils.transformRect(transform, rect);
+  //   final Rect targetRect = bounds.translate(
+  //     axis == Axis.vertical ? 0.0 : (size.width - itemExtent) / 2,
+  //     axis == Axis.horizontal ? 0.0 : (size.height - itemExtent) / 2,
+  //   );
+  //
+  //   return RevealedOffset(offset: targetOffset, rect: targetRect);
+  // }
 
   @override
   void showOnScreen({
